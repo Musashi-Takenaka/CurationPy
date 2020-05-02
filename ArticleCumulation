@@ -10,23 +10,25 @@ from openpyxl.styles import Border, Font, Side, PatternFill, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 """
-queryを作成する
-term=検索文字列。ブール演算子も可
-例：term=asthma[mh]+OR+hay+fever[mh]。[mh]はMeSH Termsの記号
-retmax=検索数
+term=query(bools)
+    no need ""
+    term=asthma[mh]+OR+hay+fever[mh]; [mh] means mesh terms
+retmax=# of articles
 """
-query = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=KEYWORD&retmax=1000&retmode=json'
+KEYWORS = XXXX
+rm = 
+query = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=KEYWORD&retmax=rm&retmode=json'
 
-### responseは辞書型データで、ここからpmidだけ抜き出す
+### response is dictionary type, and curate pmid
 response = requests.get(query)
 response_json = response.json()
 pmids = response_json['esearchresult']['idlist']
 
-### pmid毎のクエリを作成
+### pmid query making 
 URL = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id='
 queries = [URL + pmid for pmid in pmids]
 
-### jsonデータを格納する辞書を作成
+### dictionary make for json data
 responses = {}
 for query in queries:
     response = requests.get(query)
@@ -34,8 +36,8 @@ for query in queries:
     responses.update(res_json)
 
 """    
-データとして取得するものをリスト型に入れる
-print(responses['30478810'].keys())などで必要なkeysを確認可
+list make for accumulating data
+keys check via print(responses['30478810'].keys())
 """
 Summaries = [{'pmid':pmid, 
             'Title':responses[pmid]['title'], 
@@ -43,17 +45,19 @@ Summaries = [{'pmid':pmid,
             'Journal' : responses[pmid]['source'],
             'Pubdate':responses[pmid]['epubdate']} for pmid in pmids]
 
-### 空のデータフレームを作成
+### make datafram
 data  = pd.DataFrame(columns = ['PMID','Title', 'Author', 'Journal', 'Pubdate'])
 
-### Summariesよりカラム毎のリストを作成する
+"""
+make list from each column of summaries
+input each dataframe from the lists
+"""
 PMIDs = [ i['pmid'] for i in Summaries ]
 Titles = [ i['Title'] for i in Summaries ]
 Authors = [ i['Author'] for i in Summaries ]
 Journals = [ i['Journal'] for i in  Summaries ]
 Pubdates = [ i['Pubdate'] for i in Summaries ]
 
-### 作成したリストそれぞれをデータフレームへ格納する
 data['PMID'] = PMIDs
 data['Title'] = Titles
 data['Author'] = Authors
@@ -61,23 +65,21 @@ data['Journal'] = Journals
 data['Pubdate'] = Pubdates
 
 """
-ワークブックの作成
-ワークブックのアクティブになっているシートの選択
-シートの名前を変更
+make workbook
+choose active sheet on the workbook
+change name of the sheet
 """
 wb = openpyxl.Workbook()
 ws = wb.active
 ws.title='Articles'
 
-### Excelとして書き出す際のスタイル設定
-#フォントの設定
+### Style of sheet
+# Font
 normal_font = Font(name = "Century Gothic",sz = 9,b = False)
 header_font = Font(name = "Century Gothic", sz = 9, b = True, color = 'FFFFFFFF')
-#ヘッダーの塗りの設定
+# Header
 header_fill = PatternFill(patternType = "solid", fgColor = "FF808080")
-#ヘッダーを中央揃えにする設定
-header_center = Alignment(horizontal='center',vertical = 'center')    
-#ヘッダーを太字にする設定
+header_center = Alignment(horizontal='center',vertical = 'center')
 header_border = Border(
         outline=True,
         left=Side(style='thin', color='FF000000'),
@@ -86,16 +88,15 @@ header_border = Border(
         bottom=Side(style='thin', color='FF000000')
         )
 
-### pandasデータフレームをopenpyxl
+### pandas dataframe change to openpyxl
 for r in dataframe_to_rows(data, index=False, header=True):
     ws.append(r)
     
-### 設定したスタイルを適用    
 for row in ws:
     for cell in row:
         cell.font = normal_font
         
-### headerのスタイルを指定      
+### Header style      
 header_cell = ['A1', 'B1', 'C1', 'D1', 'E1']
 for cell in header_cell:
     ws[cell].font = header_font
@@ -103,5 +104,5 @@ for cell in header_cell:
     ws[cell].alignment = header_center
     ws[cell].border = header_border
     
-### エクセルファイルの保存
+### Export
 wb.save("XXXX.xlsx")
