@@ -21,7 +21,7 @@ def log2FC(x, y):
     else:
         return "error"
 
-def p-value(x, y):
+def pvalue(x, y):
     # Welch test
     x_var = np.var(x, ddof=1)
     y_var = np.var(y, ddof=1)
