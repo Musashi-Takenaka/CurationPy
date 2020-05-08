@@ -12,9 +12,9 @@ def log2FC(x, y):
     if Ave1 == 0 and Ave2 == 0:
         return 0
     elif Ave1 > 0 and Ave2 > 0:
-        fc = math.log(Ave1/Ave2)
+        fc = math.log2(Ave1/Ave2)
         return fc
-    elif Ave1 >0 and Ave2 = 0:
+    elif Ave1 >0 and Ave2 == 0:
         return 10000
     elif Ave1 == 0 and Ave2 > 0:
         return -10000
