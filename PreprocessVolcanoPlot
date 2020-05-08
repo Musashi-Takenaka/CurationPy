@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+import pundas as pd
+import numpy as np
+import math
+from scipy import stats
+
+def log2FC(x, y):
+    Ave1 = np.average(x)
+    Ave2 = np.average(y)
+
+    if Ave1 == 0 and Ave2 == 0:
+        return 0
+    elif Ave1 > 0 and Ave2 > 0:
+        fc = math.log(Ave1/Ave2)
+        return fc
+    elif Ave1 >0 and Ave2 = 0:
+        return 10000
+    elif Ave1 == 0 and Ave2 > 0:
+        return -10000
+    else:
+        return "error"
+
+def p-value(x, y):
+    # Welch test
+    x_var = np.var(x, ddof=1)
+    y_var = np.var(y, ddof=1)
+    x_df = len(x) - 1
+    y_df = len(y) - 1
+    Fvalue = A_var / B_var
+    p_value = stats.f.cdf(Fvalue, x_df, y_df)
+
+    if p_value >= 0.05:
+        t, p = stats.ttest_ind(x, y, equal_var = True)
+        return p
+    else:
+        t, p = stats.ttest_ind(x, y, equal_var = False)
+        return p
