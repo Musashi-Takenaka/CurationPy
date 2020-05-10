@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+
+"""
+Flow chart make via graphviz on Python 3
+"""
+
+from graphviz import Digraph
+
+### Set graph function and output format
+f = Digraph(format='png')
+
+### Set graph type, default fontsize, font
+f.attr(rankdir='dot', size='16', fontname = 'Arial')
+
+### Set the node condition
+f.attr('node', shape='diamond')
+f.node('S1')
+
+f.attr('node', shape='oval', color='black', style='filled', fontcolor='white')
+f.node('P1')
+
+### Set the edge condition
+f.edge('S1', 'P1', label='Enzyme')
+
+### Rending the graph
+f.render('flowchart', view=True)
