@@ -23,11 +23,15 @@ def log2FC(x):
     else:
         return "error"
 
+"""
+
+"""
+    
 def pvalue(x):
     x1 = x.iloc[0:3]
     x2 = x.iloc[3:6]
     
-    ### Welch test
+    ### F-test
     x1_var = np.var(x1, ddof=1)
     x2_var = np.var(x2, ddof=1)
     x1_df = len(x1) - 1
@@ -35,13 +39,19 @@ def pvalue(x):
     Fvalue = x1_var / x2_var
     p_value = stats.f.cdf(Fvalue, x1_df, x2_df)
     
-    ### Student test
-    if p_value >= 0.05:
-        t, p = stats.ttest_ind(x1, x2, equal_var = True)
-        return p
+    ### Student test/Welch test
+    Ave1 = np.average(x1)
+    Ave2 = np.average(x2)
+    
+    if Ave1 == 0 and Ave2 == 0:
+        return 0
     else:
-        t, p = stats.ttest_ind(x1, x2, equal_var = False)
-        return p
+        if p_value >= 0.05:
+            t, p = stats.ttest_ind(x1, x2, equal_var = True)
+            return p
+        else:
+            t, p = stats.ttest_ind(x1, x2, equal_var = False)
+            return p
 
 """
 ### Test
