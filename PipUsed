@@ -1,0 +1,16 @@
+### Install pip-review
+
+pip install pip-review
+
+### Use pip-review
+### Print the list of non updata ones
+
+pip-review
+
+### Updata automatically
+
+pip-review --auto
+
+### Updata interactively
+
+pip-review --interactive
